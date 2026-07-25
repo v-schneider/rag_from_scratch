@@ -1,3 +1,10 @@
+import os
+
+os.environ["USER_AGENT"] = "rag-from-scratch/1.0"
+
+import time
+import warnings
+
 from bs4.filter import SoupStrainer
 
 from langchain import hub
@@ -7,6 +14,12 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langsmith.utils import LangSmithMissingAPIKeyWarning
+
+warnings.filterwarnings(
+    "ignore",
+    category=LangSmithMissingAPIKeyWarning
+)
 
 #### INDEXING ####
 
@@ -47,5 +60,10 @@ rag_chain = (
 )
 
 # Question
-response = rag_chain.invoke("What is Task Decomposition?")
-print(response)
+start_time = time.perf_counter()
+answer = rag_chain.invoke("What is Task Decomposition?")
+end_time = time.perf_counter()
+generation_time = end_time - start_time
+
+print("Answer:", answer)
+print("Generation Time:", generation_time)
